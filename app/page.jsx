@@ -1427,25 +1427,6 @@ export default function RandomChatApp() {
         {/* MESSAGE INPUT AREA */}
         {/* ============================================ */}
         <div className="p-4 border-t bg-gray-50">
-          {/* Upload progress indicator - shows when uploading */}
-          {isUploading && (
-            <div className="mb-3 bg-purple-50 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <Loader2 className="w-4 h-4 text-purple-600 animate-spin" />
-                <span className="text-sm text-purple-700 font-medium">
-                  Uploading... {uploadProgress}%
-                </span>
-              </div>
-              {/* Progress bar */}
-              <div className="h-2 bg-purple-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-indigo-600 transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
-          
           <div className="flex items-center gap-2">
             {/* Hidden file inputs for media uploads */}
             <input
