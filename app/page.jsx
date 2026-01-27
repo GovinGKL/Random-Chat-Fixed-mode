@@ -263,6 +263,36 @@ export default function RandomChatApp() {
       setAppState('setup');
     });
 
+    // ============================================
+    // SOCKET EVENT: ERROR HANDLER
+    // ============================================
+    // Triggered when a socket error occurs
+    newSocket.on('connect_error', (error) => {
+      // Log the error for debugging
+      console.error('Socket connection error:', error);
+    });
+
+    // ============================================
+    // SOCKET EVENT: DISCONNECT HANDLER
+    // ============================================
+    // Triggered when socket disconnects
+    newSocket.on('disconnect', (reason) => {
+      // Log the disconnect reason
+      console.log('Socket disconnected:', reason);
+      
+      // If disconnect was due to server or transport issue, it will auto-reconnect
+      // If disconnect was intentional (io client disconnect), we don't need to do anything
+    });
+
+    // ============================================
+    // SOCKET EVENT: RECONNECT HANDLER
+    // ============================================
+    // Triggered when socket successfully reconnects
+    newSocket.on('reconnect', (attemptNumber) => {
+      // Log successful reconnection
+      console.log('Socket reconnected after', attemptNumber, 'attempts');
+    });
+
     // Store the socket instance in state for use in other functions
     setSocket(newSocket);
 
