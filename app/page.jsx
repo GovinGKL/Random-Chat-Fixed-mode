@@ -1463,44 +1463,64 @@ export default function RandomChatApp() {
               className="hidden"
             />
 
-            {/* Image upload button - disabled during upload */}
+            {/* Image upload button - disabled during upload or recording */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
+              disabled={isUploading || isRecording}
               className="text-gray-500 hover:text-purple-600 hover:bg-purple-50 disabled:opacity-50"
               title="Send image"
             >
               <Image className="w-5 h-5" />
             </Button>
 
-            {/* Video upload button - disabled during upload */}
+            {/* Video upload button - disabled during upload or recording */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => videoInputRef.current?.click()}
-              disabled={isUploading}
+              disabled={isUploading || isRecording}
               className="text-gray-500 hover:text-purple-600 hover:bg-purple-50 disabled:opacity-50"
               title="Send video (max 1 min)"
             >
               <Video className="w-5 h-5" />
             </Button>
 
-            {/* Message text input field - disabled during upload */}
+            {/* Voice recording button - toggle between start/stop */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={isRecording ? handleStopRecording : handleStartRecording}
+              disabled={isUploading}
+              className={`${
+                isRecording 
+                  ? 'text-red-500 hover:text-red-600 hover:bg-red-50 animate-pulse' 
+                  : 'text-gray-500 hover:text-purple-600 hover:bg-purple-50'
+              } disabled:opacity-50`}
+              title={isRecording ? `Stop recording (${recordingDuration}s)` : 'Record voice (max 20s)'}
+            >
+              {isRecording ? (
+                <Square className="w-5 h-5 fill-current" />
+              ) : (
+                <Mic className="w-5 h-5" />
+              )}
+            </Button>
+
+            {/* Message text input field - disabled during upload or recording */}
             <Input
               value={inputMessage}
               onChange={handleTyping}
-              onKeyPress={(e) => e.key === 'Enter' && !isUploading && handleSendMessage()} // Send on Enter key
-              placeholder={isUploading ? "Uploading file..." : "Type a message..."}
-              disabled={isUploading}
+              onKeyPress={(e) => e.key === 'Enter' && !isUploading && !isRecording && handleSendMessage()}
+              placeholder={isRecording ? `Recording... ${recordingDuration}s` : isUploading ? "Uploading file..." : "Type a message..."}
+              disabled={isUploading || isRecording}
               className="flex-1 h-11 border-gray-200 focus:border-purple-500 focus:ring-purple-500 disabled:opacity-50"
             />
 
-            {/* Send message button - disabled during upload or when empty */}
+            {/* Send message button - disabled during upload/recording or when empty */}
             <Button
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim() || isUploading} // Disable when input is empty or uploading
+              disabled={!inputMessage.trim() || isUploading || isRecording}
               className="h-11 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white disabled:opacity-50"
             >
               <Send className="w-5 h-5" />
@@ -1509,7 +1529,7 @@ export default function RandomChatApp() {
 
           {/* File size limit information */}
           <p className="text-xs text-gray-400 mt-2 text-center">
-            Images up to 5MB • Videos up to 50MB (max 1 min)
+            Images up to 5MB • Videos up to 50MB (max 1 min) • Voice up to 20s
           </p>
         </div>
       </div>
