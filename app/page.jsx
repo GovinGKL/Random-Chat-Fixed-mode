@@ -161,6 +161,18 @@ export default function RandomChatApp() {
   
   // Reference to store the search timer interval ID
   const searchTimerRef = useRef(null);
+  
+  // ============================================
+  // VOICE RECORDING REFS
+  // ============================================
+  // Reference to MediaRecorder instance
+  const mediaRecorderRef = useRef(null);
+  
+  // Reference to store audio chunks during recording
+  const audioChunksRef = useRef([]);
+  
+  // Reference to recording timer interval
+  const recordingTimerRef = useRef(null);
 
   // ============================================
   // SOCKET CONNECTION EFFECT
