@@ -118,6 +118,9 @@ export default function RandomChatApp() {
   
   // Store upload progress percentage
   const [uploadProgress, setUploadProgress] = useState(0);
+  
+  // Store the type of file being uploaded ('image' or 'video')
+  const [uploadingFileType, setUploadingFileType] = useState(null);
 
   // ============================================
   // USER FORM DATA STATE
