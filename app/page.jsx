@@ -501,6 +501,7 @@ export default function RandomChatApp() {
     // Set uploading state to show progress indicator
     setIsUploading(true);
     setUploadProgress(0);
+    setUploadingFileType('image'); // Set the file type being uploaded
 
     // Create a FileReader to convert file to base64 string
     const reader = new FileReader();
