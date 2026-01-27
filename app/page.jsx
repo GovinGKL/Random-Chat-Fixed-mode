@@ -52,6 +52,8 @@ import {
   User,           // User profile icon
   Search,         // Search icon
   Zap,            // Quick action icon
+  Mic,            // Microphone icon for voice recording
+  Square,         // Stop recording icon
 } from 'lucide-react';
 
 // ============================================
