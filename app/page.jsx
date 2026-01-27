@@ -1133,6 +1133,47 @@ export default function RandomChatApp() {
               );
             })}
 
+            {/* ============================================ */}
+            {/* UPLOADING FILE PLACEHOLDER IN CHAT */}
+            {/* ============================================ */}
+            {/* Shows a placeholder message while uploading image/video */}
+            {isUploading && (
+              <div className="flex justify-end">
+                <div className="max-w-[75%] rounded-2xl px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-br-md">
+                  {/* Uploading indicator with icon */}
+                  <div className="flex items-center gap-3">
+                    {/* Show image or video icon based on file type */}
+                    {uploadingFileType === 'image' ? (
+                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                        <Image className="w-6 h-6 text-white" />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                        <Video className="w-6 h-6 text-white" />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      {/* Uploading text */}
+                      <p className="text-sm font-medium mb-1">
+                        Sending {uploadingFileType === 'image' ? 'image' : 'video'}...
+                      </p>
+                      {/* Progress bar inside the message bubble */}
+                      <div className="h-1.5 bg-white/30 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-white transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                      {/* Progress percentage */}
+                      <p className="text-xs text-white/70 mt-1">{uploadProgress}%</p>
+                    </div>
+                    {/* Spinning loader */}
+                    <Loader2 className="w-5 h-5 text-white animate-spin" />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Typing indicator animation */}
             {partnerTyping && (
               <div className="flex justify-start">
