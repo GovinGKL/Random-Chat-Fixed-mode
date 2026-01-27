@@ -1301,6 +1301,27 @@ export default function RandomChatApp() {
                       </div>
                     )}
 
+                    {/* Render audio/voice message with controls */}
+                    {message.type === 'audio' && (
+                      <div className="flex items-center gap-3 min-w-[200px]">
+                        {/* Microphone icon */}
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          isOwnMessage ? 'bg-white/20' : 'bg-purple-100'
+                        }`}>
+                          <Mic className={`w-5 h-5 ${isOwnMessage ? 'text-white' : 'text-purple-600'}`} />
+                        </div>
+                        {/* Audio player */}
+                        <audio
+                          src={message.content}
+                          controls
+                          className="h-8 max-w-[180px]"
+                          style={{ 
+                            filter: isOwnMessage ? 'invert(1) brightness(2)' : 'none'
+                          }}
+                        />
+                      </div>
+                    )}
+
                     {/* Message timestamp */}
                     <p
                       className={`text-xs mt-1 ${
