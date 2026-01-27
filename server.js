@@ -167,6 +167,12 @@ app.prepare().then(() => {
     
     // Increase ping timeout for better stability
     pingTimeout: 60000,
+    
+    // ============================================
+    // CRITICAL: Increase max buffer size for images/videos
+    // ============================================
+    // Default is 1MB, increase to 100MB to handle large files
+    maxHttpBufferSize: 100 * 1024 * 1024, // 100MB max buffer size
   });
 
   // ============================================
