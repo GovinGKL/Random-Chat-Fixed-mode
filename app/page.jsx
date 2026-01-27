@@ -1074,22 +1074,40 @@ export default function RandomChatApp() {
                       <p className="break-words">{message.content}</p>
                     )}
 
-                    {/* Render image message */}
+                    {/* Render image message with loading state */}
                     {message.type === 'image' && (
-                      <img
-                        src={message.content}
-                        alt="Shared image"
-                        className="max-w-full rounded-lg max-h-64 object-contain"
-                      />
+                      <div className="relative">
+                        <img
+                          src={message.content}
+                          alt="Shared image"
+                          className="max-w-full rounded-lg max-h-64 object-contain cursor-pointer"
+                          loading="lazy"
+                          onClick={() => window.open(message.content, '_blank')}
+                          onError={(e) => {
+                            // Handle broken images
+                            e.target.onerror = null;
+                            e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect fill="%23eee" width="200" height="150"/><text fill="%23999" x="50%" y="50%" text-anchor="middle" dy=".3em">Image failed</text></svg>';
+                          }}
+                        />
+                      </div>
                     )}
 
-                    {/* Render video message */}
+                    {/* Render video message with controls */}
                     {message.type === 'video' && (
-                      <video
-                        src={message.content}
-                        controls // Show play/pause controls
-                        className="max-w-full rounded-lg max-h-64"
-                      />
+                      <div className="relative">
+                        <video
+                          src={message.content}
+                          controls // Show play/pause controls
+                          className="max-w-full rounded-lg max-h-64"
+                          preload="metadata"
+                          onError={(e) => {
+                            // Log video load errors
+                            console.error('Video failed to load');
+                          }}
+                        >
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
                     )}
 
                     {/* Message timestamp */}
