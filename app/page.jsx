@@ -615,9 +615,12 @@ export default function RandomChatApp() {
       return;
     }
 
-    // Set uploading state to show progress indicator
+    // ============================================
+    // IMMEDIATELY SHOW UPLOADING STATE
+    // ============================================
+    // Set uploading state FIRST to show loading indicator right away
     setIsUploading(true);
-    setUploadProgress(0);
+    setUploadProgress(5); // Start at 5% - checking video duration
     setUploadingFileType('video'); // Set the file type being uploaded
 
     // Create a temporary video element to check duration
@@ -629,11 +632,15 @@ export default function RandomChatApp() {
       // Release the object URL to free memory
       URL.revokeObjectURL(video.src);
       
+      // Set progress to 10% - duration check passed
+      setUploadProgress(10);
+      
       // Check if video duration exceeds 1 minute (60 seconds)
       if (video.duration > 60) {
         alert('Video must be 1 minute or less');
         setIsUploading(false);
         setUploadProgress(0);
+        setUploadingFileType(null);
         return;
       }
       
@@ -643,8 +650,8 @@ export default function RandomChatApp() {
       // Event handler for tracking upload progress
       reader.onprogress = (event) => {
         if (event.lengthComputable) {
-          // Calculate and update progress percentage
-          const progress = Math.round((event.loaded / event.total) * 100);
+          // Calculate progress - scale from 10% to 90% during read
+          const progress = 10 + Math.round((event.loaded / event.total) * 80);
           setUploadProgress(progress);
         }
       };
