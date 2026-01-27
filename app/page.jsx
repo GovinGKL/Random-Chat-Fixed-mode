@@ -658,6 +658,9 @@ export default function RandomChatApp() {
       
       // Event handler when file reading completes
       reader.onload = () => {
+        // Set progress to 90% - sending to server
+        setUploadProgress(90);
+        
         try {
           // Send the video as a base64-encoded data URL
           socket?.emit('send-message', {
@@ -665,13 +668,22 @@ export default function RandomChatApp() {
             type: 'video',          // Message type indicator
           });
           
+          // Set to 100% after sending
+          setUploadProgress(100);
+          
           // Log success for debugging
           console.log('Video sent successfully');
+          
+          // Small delay before hiding the upload indicator
+          setTimeout(() => {
+            setIsUploading(false);
+            setUploadProgress(0);
+            setUploadingFileType(null);
+          }, 300);
         } catch (error) {
           // Log any errors that occur
           console.error('Error sending video:', error);
           alert('Failed to send video. Please try again.');
-        } finally {
           // Reset uploading state
           setIsUploading(false);
           setUploadProgress(0);
@@ -707,6 +719,126 @@ export default function RandomChatApp() {
     if (videoInputRef.current) {
       videoInputRef.current.value = '';
     }
+  };
+
+  // ============================================
+  // HANDLE VOICE RECORDING START
+  // ============================================
+  // Function to start recording voice message
+  const handleStartRecording = async () => {
+    try {
+      // Request microphone permission from the browser
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Create a new MediaRecorder instance with the audio stream
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus' // Use WebM format with Opus codec
+      });
+      
+      // Store reference to the media recorder
+      mediaRecorderRef.current = mediaRecorder;
+      
+      // Clear any previous audio chunks
+      audioChunksRef.current = [];
+      
+      // Event handler for when audio data is available
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          // Add the audio chunk to our array
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      
+      // Event handler when recording stops
+      mediaRecorder.onstop = () => {
+        // Create a blob from all audio chunks
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        
+        // Convert blob to base64 and send
+        const reader = new FileReader();
+        
+        // Set uploading state for audio
+        setIsUploading(true);
+        setUploadProgress(50);
+        setUploadingFileType('audio');
+        
+        reader.onload = () => {
+          // Send the audio message
+          socket?.emit('send-message', {
+            content: reader.result,
+            type: 'audio',
+            duration: recordingDuration // Include duration for display
+          });
+          
+          setUploadProgress(100);
+          
+          // Reset after small delay
+          setTimeout(() => {
+            setIsUploading(false);
+            setUploadProgress(0);
+            setUploadingFileType(null);
+          }, 300);
+          
+          console.log('Voice message sent successfully');
+        };
+        
+        reader.onerror = () => {
+          console.error('Error converting audio');
+          alert('Failed to send voice message');
+          setIsUploading(false);
+          setUploadProgress(0);
+          setUploadingFileType(null);
+        };
+        
+        // Read the audio blob as base64
+        reader.readAsDataURL(audioBlob);
+        
+        // Stop all audio tracks to release microphone
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      // Start recording
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingDuration(0);
+      
+      // Start the recording timer
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingDuration(prev => {
+          // Auto-stop at max duration (20 seconds)
+          if (prev >= MAX_RECORDING_DURATION - 1) {
+            handleStopRecording();
+            return MAX_RECORDING_DURATION;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+      
+      console.log('Recording started');
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      alert('Could not access microphone. Please allow microphone permission.');
+    }
+  };
+
+  // ============================================
+  // HANDLE VOICE RECORDING STOP
+  // ============================================
+  // Function to stop recording and send voice message
+  const handleStopRecording = () => {
+    // Stop the recording timer
+    if (recordingTimerRef.current) {
+      clearInterval(recordingTimerRef.current);
+      recordingTimerRef.current = null;
+    }
+    
+    // Stop the media recorder if it exists and is recording
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+    
+    // Reset recording state
+    setIsRecording(false);
   };
 
   // ============================================
