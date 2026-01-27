@@ -158,6 +158,17 @@ export default function RandomChatApp() {
       
       // Transport methods to try (WebSocket first, then polling as fallback)
       transports: ['websocket', 'polling'],
+      
+      // ============================================
+      // CRITICAL: Timeout and reconnection settings
+      // ============================================
+      // Increase timeout for large file transfers
+      timeout: 60000, // 60 seconds timeout
+      
+      // Enable automatic reconnection
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     // ============================================
