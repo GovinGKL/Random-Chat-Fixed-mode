@@ -1084,6 +1084,25 @@ export default function RandomChatApp() {
         {/* MESSAGE INPUT AREA */}
         {/* ============================================ */}
         <div className="p-4 border-t bg-gray-50">
+          {/* Upload progress indicator - shows when uploading */}
+          {isUploading && (
+            <div className="mb-3 bg-purple-50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Loader2 className="w-4 h-4 text-purple-600 animate-spin" />
+                <span className="text-sm text-purple-700 font-medium">
+                  Uploading... {uploadProgress}%
+                </span>
+              </div>
+              {/* Progress bar */}
+              <div className="h-2 bg-purple-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-purple-500 to-indigo-600 transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+          
           <div className="flex items-center gap-2">
             {/* Hidden file inputs for media uploads */}
             <input
@@ -1101,42 +1120,45 @@ export default function RandomChatApp() {
               className="hidden"
             />
 
-            {/* Image upload button */}
+            {/* Image upload button - disabled during upload */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => fileInputRef.current?.click()}
-              className="text-gray-500 hover:text-purple-600 hover:bg-purple-50"
+              disabled={isUploading}
+              className="text-gray-500 hover:text-purple-600 hover:bg-purple-50 disabled:opacity-50"
               title="Send image"
             >
               <Image className="w-5 h-5" />
             </Button>
 
-            {/* Video upload button */}
+            {/* Video upload button - disabled during upload */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => videoInputRef.current?.click()}
-              className="text-gray-500 hover:text-purple-600 hover:bg-purple-50"
+              disabled={isUploading}
+              className="text-gray-500 hover:text-purple-600 hover:bg-purple-50 disabled:opacity-50"
               title="Send video (max 1 min)"
             >
               <Video className="w-5 h-5" />
             </Button>
 
-            {/* Message text input field */}
+            {/* Message text input field - disabled during upload */}
             <Input
               value={inputMessage}
               onChange={handleTyping}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()} // Send on Enter key
-              placeholder="Type a message..."
-              className="flex-1 h-11 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+              onKeyPress={(e) => e.key === 'Enter' && !isUploading && handleSendMessage()} // Send on Enter key
+              placeholder={isUploading ? "Uploading file..." : "Type a message..."}
+              disabled={isUploading}
+              className="flex-1 h-11 border-gray-200 focus:border-purple-500 focus:ring-purple-500 disabled:opacity-50"
             />
 
-            {/* Send message button */}
+            {/* Send message button - disabled during upload or when empty */}
             <Button
               onClick={handleSendMessage}
-              disabled={!inputMessage.trim()} // Disable when input is empty
-              className="h-11 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+              disabled={!inputMessage.trim() || isUploading} // Disable when input is empty or uploading
+              className="h-11 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white disabled:opacity-50"
             >
               <Send className="w-5 h-5" />
             </Button>
