@@ -76,6 +76,168 @@ const INTERESTS = [
 ];
 
 // ============================================
+// CUSTOM AUDIO PLAYER COMPONENT
+// ============================================
+// A custom audio player with play/pause/stop controls
+// Prevents audio from looping and provides better UX
+function AudioPlayer({ src, isOwnMessage }) {
+  // State to track if audio is playing
+  const [isPlaying, setIsPlaying] = useState(false);
+  
+  // State to track current playback time
+  const [currentTime, setCurrentTime] = useState(0);
+  
+  // State to track total duration
+  const [duration, setDuration] = useState(0);
+  
+  // Reference to the audio element
+  const audioRef = useRef(null);
+
+  // ============================================
+  // PLAY/PAUSE TOGGLE FUNCTION
+  // ============================================
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        // Pause the audio
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        // Play the audio
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  // ============================================
+  // STOP FUNCTION
+  // ============================================
+  const handleStop = () => {
+    if (audioRef.current) {
+      // Pause the audio
+      audioRef.current.pause();
+      
+      // Reset to beginning
+      audioRef.current.currentTime = 0;
+      
+      // Update states
+      setIsPlaying(false);
+      setCurrentTime(0);
+    }
+  };
+
+  // ============================================
+  // FORMAT TIME HELPER
+  // ============================================
+  const formatAudioTime = (time) => {
+    if (isNaN(time)) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // ============================================
+  // PROGRESS BAR CLICK HANDLER
+  // ============================================
+  const handleProgressClick = (e) => {
+    if (audioRef.current && duration > 0) {
+      const progressBar = e.currentTarget;
+      const clickPosition = e.nativeEvent.offsetX;
+      const progressBarWidth = progressBar.offsetWidth;
+      const newTime = (clickPosition / progressBarWidth) * duration;
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2 min-w-[220px]">
+      {/* Hidden audio element - NO LOOP */}
+      <audio
+        ref={audioRef}
+        src={src}
+        preload="metadata"
+        loop={false}
+        onLoadedMetadata={() => {
+          if (audioRef.current) {
+            setDuration(audioRef.current.duration);
+          }
+        }}
+        onTimeUpdate={() => {
+          if (audioRef.current) {
+            setCurrentTime(audioRef.current.currentTime);
+          }
+        }}
+        onEnded={() => {
+          // When audio ends, reset to beginning and stop playing
+          setIsPlaying(false);
+          setCurrentTime(0);
+          if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+          }
+        }}
+      />
+      
+      {/* Play/Pause Button */}
+      <button
+        onClick={togglePlayPause}
+        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+          isOwnMessage 
+            ? 'bg-white/20 hover:bg-white/30' 
+            : 'bg-purple-100 hover:bg-purple-200'
+        }`}
+      >
+        {isPlaying ? (
+          <Pause className={`w-5 h-5 ${isOwnMessage ? 'text-white' : 'text-purple-600'}`} />
+        ) : (
+          <Play className={`w-5 h-5 ${isOwnMessage ? 'text-white' : 'text-purple-600'}`} />
+        )}
+      </button>
+      
+      {/* Progress and Time */}
+      <div className="flex-1 flex flex-col gap-1">
+        {/* Progress Bar - Clickable */}
+        <div 
+          onClick={handleProgressClick}
+          className={`h-2 rounded-full cursor-pointer ${
+            isOwnMessage ? 'bg-white/30' : 'bg-gray-200'
+          }`}
+        >
+          <div 
+            className={`h-full rounded-full transition-all ${
+              isOwnMessage ? 'bg-white' : 'bg-purple-500'
+            }`}
+            style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
+          />
+        </div>
+        
+        {/* Time Display */}
+        <div className={`flex justify-between text-xs ${
+          isOwnMessage ? 'text-white/70' : 'text-gray-500'
+        }`}>
+          <span>{formatAudioTime(currentTime)}</span>
+          <span>{formatAudioTime(duration)}</span>
+        </div>
+      </div>
+      
+      {/* Stop Button */}
+      <button
+        onClick={handleStop}
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+          isOwnMessage 
+            ? 'bg-white/20 hover:bg-white/30' 
+            : 'bg-gray-100 hover:bg-gray-200'
+        }`}
+        title="Stop"
+      >
+        <Square className={`w-3 h-3 ${isOwnMessage ? 'text-white' : 'text-gray-600'} fill-current`} />
+      </button>
+    </div>
+  );
+}
+
+// ============================================
 // MAIN APP COMPONENT
 // ============================================
 export default function RandomChatApp() {
