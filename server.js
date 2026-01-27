@@ -66,15 +66,11 @@ const socketToRoom = new Map();
 // ============================================
 // This function finds a compatible match for a user
 // based on gender preferences and common interests
+// When multiple users have the same match score, it randomly selects one
 function findMatch(user, socketId) {
-  // Variable to store the best match found
-  let bestMatch = null;
-  
-  // Variable to track how many interests match
-  let bestMatchScore = -1;
-  
-  // Variable to store the socket ID of the best match
-  let bestMatchSocketId = null;
+  // Array to store all compatible matches with their scores
+  // This allows us to randomly select from users with equal scores
+  const compatibleMatches = [];
 
   // Iterate through all users in the waiting queue
   // entries() returns [key, value] pairs
@@ -114,10 +110,14 @@ function findMatch(user, socketId) {
       // Get the count of common interests as the match score
       const matchScore = commonInterests.length;
 
-      // Update best match if this user has more common interests
-      // OR if we haven't found any match yet (bestMatchScore is -1)
-      if (matchScore > bestMatchScore) {
-        // Store the new best match score
+      // Add this compatible user to the matches array
+      // Store all the data we need for later use
+      compatibleMatches.push({
+        user: waitingUser,
+        socketId: waitingSocketId,
+        score: matchScore,
+        commonInterests: commonInterests
+      });
         bestMatchScore = matchScore;
         
         // Store the waiting user's data as best match
