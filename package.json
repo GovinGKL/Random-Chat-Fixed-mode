@@ -3,12 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=512 node server.js"
-,
-    "dev:no-reload": "node server.js",
-    "dev:webpack": "node server.js",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "node .next/standalone/server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
