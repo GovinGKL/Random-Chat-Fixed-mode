@@ -534,6 +534,7 @@ export default function RandomChatApp() {
         // Reset uploading state
         setIsUploading(false);
         setUploadProgress(0);
+        setUploadingFileType(null); // Clear the file type
       }
     };
     
@@ -543,6 +544,7 @@ export default function RandomChatApp() {
       alert('Failed to read image file. Please try again.');
       setIsUploading(false);
       setUploadProgress(0);
+      setUploadingFileType(null); // Clear the file type
     };
     
     // Start reading the file as a data URL (base64)
@@ -574,6 +576,7 @@ export default function RandomChatApp() {
     // Set uploading state to show progress indicator
     setIsUploading(true);
     setUploadProgress(0);
+    setUploadingFileType('video'); // Set the file type being uploaded
 
     // Create a temporary video element to check duration
     const video = document.createElement('video');
