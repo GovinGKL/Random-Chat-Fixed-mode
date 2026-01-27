@@ -626,6 +626,7 @@ export default function RandomChatApp() {
           // Reset uploading state
           setIsUploading(false);
           setUploadProgress(0);
+          setUploadingFileType(null); // Clear the file type
         }
       };
       
@@ -635,6 +636,7 @@ export default function RandomChatApp() {
         alert('Failed to read video file. Please try again.');
         setIsUploading(false);
         setUploadProgress(0);
+        setUploadingFileType(null); // Clear the file type
       };
       
       // Start reading the file as a data URL (base64)
@@ -646,6 +648,7 @@ export default function RandomChatApp() {
       alert('Failed to load video. Please try a different file.');
       setIsUploading(false);
       setUploadProgress(0);
+      setUploadingFileType(null); // Clear the file type
     };
     
     // Create a temporary object URL to load video metadata
