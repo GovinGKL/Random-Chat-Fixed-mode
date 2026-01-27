@@ -1406,12 +1406,6 @@ export default function RandomChatApp() {
                 </div>
               </div>
             )}
-                    {/* Recording dot */}
-                    <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Typing indicator animation */}
             {partnerTyping && (
