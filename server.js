@@ -161,6 +161,12 @@ app.prepare().then(() => {
     // Path where Socket.io will listen for connections
     // Clients must connect to this specific path
     path: '/socket.io',
+    
+    // Add these options for better compatibility
+    transports: ['websocket', 'polling'],
+    
+    // Increase ping timeout for better stability
+    pingTimeout: 60000,
   });
 
   // ============================================
