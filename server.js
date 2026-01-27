@@ -22,7 +22,6 @@ const dev = process.env.NODE_ENV !== 'production';
 
 // Get the hostname from environment or default to '0.0.0.0'
 // '0.0.0.0' allows connections from any network interface
-const hostname = process.env.HOSTNAME || '0.0.0.0';
 
 // Get the port from environment or default to 3000
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -31,7 +30,7 @@ const port = parseInt(process.env.PORT || '3000', 10);
 // dev: enables hot reloading in development
 // hostname: the server's hostname
 // port: the server's port number
-const app = next({ dev, hostname, port });
+const app = next({ dev });
 
 // Get the default request handler from Next.js
 // This handles all HTTP requests for pages and API routes
@@ -571,10 +570,8 @@ app.prepare().then(() => {
   // START THE HTTP SERVER
   // ============================================
   // Begin listening for connections on the specified port
-  httpServer.listen(port, hostname, () => {
-    // Log server startup information
-    console.log(`\n🚀 Random Chat Server running at http://${hostname}:${port}`);
-    console.log(`📡 Socket.io listening on path: /socket.io`);
-    console.log(`🌍 Environment: ${dev ? 'development' : 'production'}\n`);
+  httpServer.listen(port, () => {
+   console.log(`🚀 Server listening on port ${port}`);
+    console.log(`🌍 Environment: ${dev ? 'development' : 'production'}`);
   });
 });
