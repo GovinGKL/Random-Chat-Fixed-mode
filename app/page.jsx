@@ -526,6 +526,10 @@ export default function RandomChatApp() {
       return;
     }
 
+    // Set uploading state to show progress indicator
+    setIsUploading(true);
+    setUploadProgress(0);
+
     // Create a temporary video element to check duration
     const video = document.createElement('video');
     video.preload = 'metadata'; // Only load metadata, not full video
@@ -538,23 +542,62 @@ export default function RandomChatApp() {
       // Check if video duration exceeds 1 minute (60 seconds)
       if (video.duration > 60) {
         alert('Video must be 1 minute or less');
+        setIsUploading(false);
+        setUploadProgress(0);
         return;
       }
       
       // Create a FileReader to convert file to base64 string
       const reader = new FileReader();
       
+      // Event handler for tracking upload progress
+      reader.onprogress = (event) => {
+        if (event.lengthComputable) {
+          // Calculate and update progress percentage
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(progress);
+        }
+      };
+      
       // Event handler when file reading completes
       reader.onload = () => {
-        // Send the video as a base64-encoded data URL
-        socket?.emit('send-message', {
-          content: reader.result, // Base64 string of video
-          type: 'video',          // Message type indicator
-        });
+        try {
+          // Send the video as a base64-encoded data URL
+          socket?.emit('send-message', {
+            content: reader.result, // Base64 string of video
+            type: 'video',          // Message type indicator
+          });
+          
+          // Log success for debugging
+          console.log('Video sent successfully');
+        } catch (error) {
+          // Log any errors that occur
+          console.error('Error sending video:', error);
+          alert('Failed to send video. Please try again.');
+        } finally {
+          // Reset uploading state
+          setIsUploading(false);
+          setUploadProgress(0);
+        }
+      };
+      
+      // Event handler for read errors
+      reader.onerror = () => {
+        console.error('Error reading file:', reader.error);
+        alert('Failed to read video file. Please try again.');
+        setIsUploading(false);
+        setUploadProgress(0);
       };
       
       // Start reading the file as a data URL (base64)
       reader.readAsDataURL(file);
+    };
+    
+    // Event handler for metadata load errors
+    video.onerror = () => {
+      alert('Failed to load video. Please try a different file.');
+      setIsUploading(false);
+      setUploadProgress(0);
     };
     
     // Create a temporary object URL to load video metadata
