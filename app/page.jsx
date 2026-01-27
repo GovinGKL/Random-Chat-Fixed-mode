@@ -524,9 +524,12 @@ export default function RandomChatApp() {
       return;
     }
 
-    // Set uploading state to show progress indicator
+    // ============================================
+    // IMMEDIATELY SHOW UPLOADING STATE
+    // ============================================
+    // Set uploading state FIRST to show loading indicator right away
     setIsUploading(true);
-    setUploadProgress(0);
+    setUploadProgress(10); // Start at 10% to show something is happening
     setUploadingFileType('image'); // Set the file type being uploaded
 
     // Create a FileReader to convert file to base64 string
@@ -535,14 +538,17 @@ export default function RandomChatApp() {
     // Event handler for tracking upload progress
     reader.onprogress = (event) => {
       if (event.lengthComputable) {
-        // Calculate and update progress percentage
-        const progress = Math.round((event.loaded / event.total) * 100);
+        // Calculate progress - scale from 10% to 90% during read
+        const progress = 10 + Math.round((event.loaded / event.total) * 80);
         setUploadProgress(progress);
       }
     };
     
     // Event handler when file reading completes
     reader.onload = () => {
+      // Set progress to 90% - sending to server
+      setUploadProgress(90);
+      
       try {
         // Send the image as a base64-encoded data URL
         socket?.emit('send-message', {
@@ -550,13 +556,23 @@ export default function RandomChatApp() {
           type: 'image',          // Message type indicator
         });
         
+        // Set to 100% after sending
+        setUploadProgress(100);
+        
         // Log success for debugging
         console.log('Image sent successfully');
+        
+        // Small delay before hiding the upload indicator
+        // This gives visual feedback that upload completed
+        setTimeout(() => {
+          setIsUploading(false);
+          setUploadProgress(0);
+          setUploadingFileType(null);
+        }, 300);
       } catch (error) {
         // Log any errors that occur
         console.error('Error sending image:', error);
         alert('Failed to send image. Please try again.');
-      } finally {
         // Reset uploading state
         setIsUploading(false);
         setUploadProgress(0);
