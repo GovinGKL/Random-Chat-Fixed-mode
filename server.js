@@ -118,20 +118,38 @@ function findMatch(user, socketId) {
         score: matchScore,
         commonInterests: commonInterests
       });
-        bestMatchScore = matchScore;
-        
-        // Store the waiting user's data as best match
-        bestMatch = waitingUser;
-        
-        // Store the socket ID for later use
-        bestMatchSocketId = waitingSocketId;
-      }
     }
   }
 
-  // Return the best match found, or null if no compatible user exists
-  // Returns an object with user data and their socket ID
-  return bestMatch ? { user: bestMatch, socketId: bestMatchSocketId } : null;
+  // ============================================
+  // RANDOM SELECTION FROM COMPATIBLE MATCHES
+  // ============================================
+  // If no compatible matches found, return null
+  if (compatibleMatches.length === 0) {
+    return null;
+  }
+
+  // Find the highest score among all matches
+  const highestScore = Math.max(...compatibleMatches.map(m => m.score));
+
+  // Filter to get only the matches with the highest score
+  // This ensures we pick from the best matches
+  const bestMatches = compatibleMatches.filter(m => m.score === highestScore);
+
+  // Randomly select one match from the best matches
+  // Math.random() gives a random number between 0 and 1
+  // Multiply by array length and floor to get random index
+  const randomIndex = Math.floor(Math.random() * bestMatches.length);
+  const selectedMatch = bestMatches[randomIndex];
+
+  // Log the selection for debugging
+  console.log(`[MATCHING] Found ${compatibleMatches.length} compatible users, ${bestMatches.length} with highest score. Randomly selected index ${randomIndex}`);
+
+  // Return the selected match with user data and socket ID
+  return {
+    user: selectedMatch.user,
+    socketId: selectedMatch.socketId
+  };
 }
 
 // ============================================
