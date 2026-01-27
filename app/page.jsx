@@ -54,6 +54,8 @@ import {
   Zap,            // Quick action icon
   Mic,            // Microphone icon for voice recording
   Square,         // Stop recording icon
+  Play,           // Play audio icon
+  Pause,          // Pause audio icon
 } from 'lucide-react';
 
 // ============================================
