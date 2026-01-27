@@ -109,6 +109,15 @@ export default function RandomChatApp() {
   
   // User's own socket ID for message identification
   const [mySocketId, setMySocketId] = useState(null);
+  
+  // ============================================
+  // FILE UPLOAD STATE
+  // ============================================
+  // Track if a file is currently being uploaded
+  const [isUploading, setIsUploading] = useState(false);
+  
+  // Store upload progress percentage
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // ============================================
   // USER FORM DATA STATE
