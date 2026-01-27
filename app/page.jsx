@@ -121,8 +121,20 @@ export default function RandomChatApp() {
   // Store upload progress percentage
   const [uploadProgress, setUploadProgress] = useState(0);
   
-  // Store the type of file being uploaded ('image' or 'video')
+  // Store the type of file being uploaded ('image', 'video', or 'audio')
   const [uploadingFileType, setUploadingFileType] = useState(null);
+
+  // ============================================
+  // VOICE RECORDING STATE
+  // ============================================
+  // Track if currently recording voice
+  const [isRecording, setIsRecording] = useState(false);
+  
+  // Store recording duration in seconds
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  
+  // Maximum recording duration (20 seconds)
+  const MAX_RECORDING_DURATION = 20;
 
   // ============================================
   // USER FORM DATA STATE
