@@ -454,16 +454,50 @@ export default function RandomChatApp() {
       return;
     }
 
+    // Set uploading state to show progress indicator
+    setIsUploading(true);
+    setUploadProgress(0);
+
     // Create a FileReader to convert file to base64 string
     const reader = new FileReader();
     
+    // Event handler for tracking upload progress
+    reader.onprogress = (event) => {
+      if (event.lengthComputable) {
+        // Calculate and update progress percentage
+        const progress = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(progress);
+      }
+    };
+    
     // Event handler when file reading completes
     reader.onload = () => {
-      // Send the image as a base64-encoded data URL
-      socket?.emit('send-message', {
-        content: reader.result, // Base64 string of image
-        type: 'image',          // Message type indicator
-      });
+      try {
+        // Send the image as a base64-encoded data URL
+        socket?.emit('send-message', {
+          content: reader.result, // Base64 string of image
+          type: 'image',          // Message type indicator
+        });
+        
+        // Log success for debugging
+        console.log('Image sent successfully');
+      } catch (error) {
+        // Log any errors that occur
+        console.error('Error sending image:', error);
+        alert('Failed to send image. Please try again.');
+      } finally {
+        // Reset uploading state
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
+    };
+    
+    // Event handler for read errors
+    reader.onerror = () => {
+      console.error('Error reading file:', reader.error);
+      alert('Failed to read image file. Please try again.');
+      setIsUploading(false);
+      setUploadProgress(0);
     };
     
     // Start reading the file as a data URL (base64)
